@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">DVibe</string>
+    <string name="currency_symbol">$</string>
+    <string name="participants">Participants</string>
+    <string name="read_less">Read less</string>
+    <string name="read_more">Read more</string>
+    <string name="space">\u0020</string>
+    <string name="band_title">Book Band</string>
+    <string name="band_subtitle">Make it musical</string>
+    <string name="per_person">per person</string>
+    <string name="offers_header">Exciting Offers</string>
+</resources>
