@@ -2,6 +2,7 @@ package com.example.dvibe
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import com.example.dvibe.ui.theme.DVibeTheme
 import com.husseinala.neon.glide.ProvideGlideLoader
 
 class MainActivity : AppCompatActivity() {
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -50,6 +53,7 @@ fun DefaultPreview() {
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun Content() {
     WithConstraints {
@@ -92,6 +96,7 @@ fun Content() {
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun EventDetailsContent() {
     val eventDetails = EventServiceImpl().getEventDetails()

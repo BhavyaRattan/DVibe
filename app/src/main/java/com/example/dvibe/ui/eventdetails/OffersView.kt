@@ -1,5 +1,7 @@
 package com.example.dvibe.ui.eventdetails
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Icon
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
@@ -9,7 +11,10 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,8 +30,11 @@ import com.example.dvibe.ui.components.NetworkImage
 import com.husseinala.neon.core.Transformation
 import com.husseinala.neon.core.centerCrop
 
+@ExperimentalAnimationApi
 @Composable
 fun OffersView(offers: List<Offer>, modifier: Modifier = Modifier) {
+    val isExpandedState = remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .background(
@@ -35,16 +43,21 @@ fun OffersView(offers: List<Offer>, modifier: Modifier = Modifier) {
             )
             .padding(horizontal = 8.dp)
     ) {
-        OffersHeader()
+        OffersHeader(
+            updateState = { newState -> isExpandedState.value = newState },
+            isExpanded = isExpandedState.value
+        )
         offers.map {
-            OffersItem(it)
-            Spacer(modifier = Modifier.size(8.dp))
+            OffersItem(it, isExpandedState.value)
+            if (isExpandedState.value) {
+                Spacer(modifier = Modifier.size(8.dp))
+            }
         }
     }
 }
 
 @Composable
-fun OffersHeader() {
+fun OffersHeader(updateState: (Boolean) -> Unit, isExpanded: Boolean) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -54,7 +67,8 @@ fun OffersHeader() {
             text = stringResource(id = R.string.offers_header),
             style = MaterialTheme.typography.h6
         )
-        IconButton(onClick = {}) {
+
+        IconButton(onClick = { updateState(!isExpanded) }) {
             Icon(
                 asset = Icons.Default.ArrowDropDown.copy(
                     defaultHeight = 36.dp,
@@ -66,53 +80,65 @@ fun OffersHeader() {
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
-fun OffersItem(offer: Offer) {
-    ConstraintLayout(
-        modifier = Modifier
-            .background(
-                color = MaterialTheme.colors.surface,
-                shape = MaterialTheme.shapes.large,
+fun OffersItem(offer: Offer, visibility: Boolean) {
+    AnimatedVisibility(
+        visible = visibility,
+        enter = expandVertically(),
+        exit = shrinkVertically(
+            animSpec = tween(
+                durationMillis = 1000,
             )
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        val (text, image, button) = createRefs()
-
-        Text(modifier = Modifier.constrainAs(text) {
-            top.linkTo(parent.top)
-            linkTo(start = parent.start, end = parent.end)
-            width = Dimension.fillToConstraints
-        }, style = MaterialTheme.typography.subtitle1, text = annotatedString {
-            withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) {
-                append(offer.description)
-            }
-
-            withStyle(style = SpanStyle(color = MaterialTheme.colors.secondary)) {
-                append(" ${offer.offerText}")
-            }
-        })
-
-        NetworkImage(
-            url = offer.banner,
-            transformation = Transformation.centerCrop(),
-            modifier = Modifier.constrainAs(image) {
-                top.linkTo(parent.top, margin = 24.dp)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-            },
-            size = 80.dp
         )
+    ) {
+        ConstraintLayout(
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colors.surface,
+                    shape = MaterialTheme.shapes.large,
+                )
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            val (text, image, button) = createRefs()
 
-        Button(onClick = {}, modifier = Modifier.constrainAs(button) {
-            bottom.linkTo(parent.bottom)
-            start.linkTo(parent.start)
-        }, backgroundColor = MaterialTheme.colors.secondary) {
-            Text(text = offer.actionText, maxLines = 1)
+            Text(modifier = Modifier.constrainAs(text) {
+                top.linkTo(parent.top)
+                linkTo(start = parent.start, end = parent.end)
+                width = Dimension.fillToConstraints
+            }, style = MaterialTheme.typography.subtitle1, text = annotatedString {
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) {
+                    append(offer.description)
+                }
+
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.secondary)) {
+                    append(" ${offer.offerText}")
+                }
+            })
+
+            NetworkImage(
+                url = offer.banner,
+                transformation = Transformation.centerCrop(),
+                modifier = Modifier.constrainAs(image) {
+                    top.linkTo(parent.top, margin = 24.dp)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                },
+                size = 80.dp
+            )
+
+            Button(onClick = {}, modifier = Modifier.constrainAs(button) {
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+            }, backgroundColor = MaterialTheme.colors.secondary) {
+                Text(text = offer.actionText, maxLines = 1)
+            }
         }
     }
 }
 
+@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun OffersViewPreview() {

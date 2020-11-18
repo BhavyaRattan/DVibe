@@ -25,13 +25,13 @@ val offers = listOf(
     Offer(
         description = "Add 10 team members and get",
         offerText = "40% off",
-        banner = "https://images.unsplash.com/photo-1498661694102-0a3793edbe74?ixlib=rb-1.2.1&auto=format&fit=crop&w=100",
+        banner = "https://raw.githubusercontent.com/BhavyaRattan/DVibe/master/resources/offer_item_2.png",
         actionText = "Add To Team"
     ),
     Offer(
         description = "Invite and get",
         offerText = "10% per participant",
-        banner = "https://images.unsplash.com/photo-1556484687-30636164638b?ixlib=rb-1.2.1&auto=format&fit=crop&w=100",
+        banner = "https://raw.githubusercontent.com/BhavyaRattan/DVibe/master/resources/offer_item_1.png",
         actionText = "Invite Member"
     )
 )
@@ -41,10 +41,10 @@ val christmasParty = EventDetails(
     date = "25 Dec, 2020",
     name = "Fueled Fam Christmas Eve",
     location = "Noida, India",
-    description = "The Holidays are a Time of Good Cheer\n" +
-            "Especially When There’s Good Wine, Whiskey and Beer!\n" +
-            "Please Join Us For A\n Christmas Cocktail Party\n" +
-            "We Ho-Ho-Hope you would dress nice and bring in your spice\n" +
+    description = "The holidays are a time of good cheer, " +
+            "especially when there’s good wine, whiskey and beer!!! " +
+            "Please join us for a christmas cocktail party. " +
+            "We Ho-Ho-Hope you would dress nice and bring in your spice!!!" +
             "See you there for a Merry Christmas at Imperfecto, GIP mall ,Noida.\n" +
             "Don't forget to RSVP so that we can add you to the list of participants",
     participants = participants,
