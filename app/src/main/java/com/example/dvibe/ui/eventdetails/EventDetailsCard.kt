@@ -1,27 +1,30 @@
 package com.example.dvibe.ui.eventdetails
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ConstraintLayout
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.QueryBuilder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.annotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.dvibe.R
 import com.example.dvibe.data.eventdetails.EventServiceImpl
 import com.example.dvibe.model.eventdetails.EventDetails
@@ -31,7 +34,7 @@ import com.example.dvibe.ui.components.DrawableText
 fun EventDescription(data: EventDetails, modifier: Modifier = Modifier) {
     ConstraintLayout(modifier.fillMaxWidth()) {
 
-        val (time, date, name, location, description) = createRefs()
+        val (time, date, name, location, favorite, description) = createRefs()
 
         DrawableText(
             modifier = modifier.constrainAs(time) {
@@ -72,6 +75,17 @@ fun EventDescription(data: EventDetails, modifier: Modifier = Modifier) {
             drawablePadding = 8.dp,
             drawableStart = Icons.Outlined.LocationOn
         )
+
+        Icon(
+            modifier = modifier.constrainAs(favorite) {
+                end.linkTo(parent.end, margin = 16.dp)
+                top.linkTo(location.top)
+            },
+            imageVector = Icons.Outlined.Favorite,
+            tint = colorResource(id = R.color.purple_200),
+            contentDescription = null
+        )
+
         DescriptionText(
             description = data.description,
             modifier = modifier.constrainAs(description) {
@@ -85,11 +99,12 @@ fun DescriptionText(description: String, modifier: Modifier = Modifier) {
     val isExpanded = remember { mutableStateOf(false) }
     val minTextChars = 100
     Text(
-        modifier = modifier.clickable(
-            onClick = { isExpanded.value = !isExpanded.value },
-            indication = null
-        ).animateContentSize(), textAlign = TextAlign.Start,
-        text = annotatedString {
+        modifier = modifier
+            .clickable(
+                onClick = { isExpanded.value = !isExpanded.value },
+            )
+            .animateContentSize(), textAlign = TextAlign.Start,
+        text = buildAnnotatedString {
             withStyle(style = SpanStyle()) {
                 if (isExpanded.value || description.length < minTextChars)
                     append(description)

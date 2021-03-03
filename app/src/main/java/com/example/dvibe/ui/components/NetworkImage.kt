@@ -1,39 +1,96 @@
 package com.example.dvibe.ui.components
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import com.husseinala.neon.core.Neon
-import com.husseinala.neon.core.Transformation
-import com.husseinala.neon.core.circleCrop
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import coil.ImageLoader
+import coil.annotation.ExperimentalCoilApi
+import coil.intercept.Interceptor
+import coil.request.ImageResult
+import coil.size.PixelSize
+import coil.transform.Transformation
+import dev.chrisbanes.accompanist.coil.CoilImage
+import dev.chrisbanes.accompanist.coil.LocalImageLoader
+import okhttp3.HttpUrl
 
+/**
+ * A wrapper around [CoilImage] setting a default [contentScale] and loading placeholder.
+ */
 @Composable
 fun NetworkImage(
     url: String,
-    size: Dp,
     modifier: Modifier = Modifier,
-    transformation: Transformation = Transformation.circleCrop()
+    contentDescription: String? = null,
+    contentScale: ContentScale = ContentScale.Crop,
+    placeholderColor: Color? = MaterialTheme.colors.onBackground,
+    imageTransformation: Transformation? = null
 ) {
-    Neon(
-        url = url,
-        transformation = transformation,
-        modifier = modifier.size(size),
-        onLoading = {
-            Box(modifier = modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    modifier = modifier.size(size)
-                        .align(Alignment.Center),
-                    color = MaterialTheme.colors.primary,
-                    strokeWidth = 2.dp
+    CoilImage(
+        data = url,
+        modifier = modifier,
+        contentDescription = contentDescription,
+        contentScale = contentScale,
+        loading = {
+            if (placeholderColor != null) {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(placeholderColor)
                 )
             }
+        },
+        requestBuilder = if (imageTransformation != null) {
+            {
+                transformations(imageTransformation)
+            }
+        } else {
+            null
         }
     )
+}
+
+@Composable
+fun ProvideImageLoader(content: @Composable () -> Unit) {
+    val context = LocalContext.current
+    val loader = remember(context) {
+        ImageLoader.Builder(context)
+            .componentRegistry {
+                add(UnsplashSizingInterceptor)
+            }.build()
+    }
+    CompositionLocalProvider(LocalImageLoader provides loader, content = content)
+}
+
+/**
+ * A Coil [Interceptor] which appends query params to Unsplash urls to request sized images.
+ */
+@OptIn(ExperimentalCoilApi::class)
+object UnsplashSizingInterceptor : Interceptor {
+    override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
+        val data = chain.request.data
+        val size = chain.size
+        if (data is String &&
+            data.startsWith("https://images.unsplash.com/photo-") &&
+            size is PixelSize &&
+            size.width > 0 &&
+            size.height > 0
+        ) {
+            val url = HttpUrl.parse(data)!!
+                .newBuilder()
+                .addQueryParameter("w", size.width.toString())
+                .addQueryParameter("h", size.height.toString())
+                .build()
+            val request = chain.request.newBuilder().data(url).build()
+            return chain.proceed(request)
+        }
+        return chain.proceed(chain.request)
+    }
 }

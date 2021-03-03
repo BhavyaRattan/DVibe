@@ -1,16 +1,17 @@
 package com.example.dvibe.ui.eventdetails
 
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
+import coil.transform.CircleCropTransformation
 import com.example.dvibe.R
 import com.example.dvibe.data.eventdetails.EventServiceImpl
 import com.example.dvibe.model.eventdetails.Participant
@@ -33,14 +34,16 @@ fun ParticipantsView(participants: List<Participant>, modifier: Modifier = Modif
             .forEachIndexed { index, participant ->
                 NetworkImage(
                     url = participant.image,
-                    size = IMAGE_SIZE,
                     modifier = modifier
                         .width(IMAGE_SIZE.times(index + 1))
                         .height(IMAGE_SIZE)
                         .padding(
                             start =
-                            IMAGE_SIZE.times(index) - OVERLAP_WIDTH.times(index)
+                            IMAGE_SIZE.times(index) - OVERLAP_WIDTH.times(index),
+                            end = OVERLAP_WIDTH.times(index)
                         )
+                        .size(IMAGE_SIZE),
+                    imageTransformation = CircleCropTransformation()
                 )
             }
 
@@ -66,8 +69,9 @@ fun MoreParticipants(count: Int, modifier: Modifier = Modifier) {
                 .padding(
                     start =
                     IMAGE_SIZE.times(PARTICIPANTS_TO_SHOW) - OVERLAP_WIDTH.times(
-                        PARTICIPANTS_TO_SHOW - 1
-                    )
+                        PARTICIPANTS_TO_SHOW
+                    ),
+                    end = OVERLAP_WIDTH
                 )
                 .background(
                     color = MaterialTheme.colors.secondary,
@@ -84,7 +88,6 @@ fun MoreParticipants(count: Int, modifier: Modifier = Modifier) {
 
         Text(
             text = stringResource(id = R.string.participants),
-            modifier = modifier.padding(start = 8.dp),
             style = MaterialTheme.typography.subtitle2
                 .copy(color = MaterialTheme.colors.secondary)
         )

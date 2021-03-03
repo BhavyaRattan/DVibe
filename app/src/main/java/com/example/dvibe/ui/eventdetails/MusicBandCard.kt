@@ -1,21 +1,25 @@
 package com.example.dvibe.ui.eventdetails
 
-import androidx.compose.foundation.Icon
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.example.dvibe.R
 import com.example.dvibe.data.eventdetails.EventServiceImpl
 import com.example.dvibe.model.eventdetails.MusicBand
@@ -28,7 +32,7 @@ fun MusicBandCard(band: MusicBand, modifier: Modifier = Modifier) {
         modifier = modifier
             .background(
                 color = MaterialTheme.colors.primaryVariant,
-                shape = CutCornerShape(topLeft = 32.dp, bottomRight = 32.dp)
+                shape = CutCornerShape(topStart = 32.dp, bottomEnd = 32.dp)
             )
             .fillMaxWidth()
             .padding(16.dp)
@@ -45,8 +49,7 @@ fun MusicBandCard(band: MusicBand, modifier: Modifier = Modifier) {
             modifier = modifier.constrainAs(logo) {
                 start.linkTo(parent.start, margin = 16.dp)
                 top.linkTo(parent.top)
-            },
-            size = 50.dp
+            }.size(50.dp),
         )
 
         Text(text = band.name,
@@ -121,15 +124,18 @@ fun MusicBandCard(band: MusicBand, modifier: Modifier = Modifier) {
 
         IconButton(
             onClick = {},
-            modifier = modifier.constrainAs(button) {
-                end.linkTo(parent.end)
-            }.background(color = MaterialTheme.colors.secondary, shape = CircleShape)
+            modifier = modifier
+                .constrainAs(button) {
+                    end.linkTo(parent.end)
+                }
+                .background(color = MaterialTheme.colors.secondary, shape = CircleShape)
                 .size(30.dp)
         ) {
             Icon(
-                asset = Icons.Filled.ArrowForwardIos,
+                imageVector = Icons.Filled.ArrowForwardIos,
                 modifier = modifier.size(12.dp),
-                tint = MaterialTheme.colors.onSecondary
+                tint = MaterialTheme.colors.onSecondary,
+                contentDescription = null
             )
         }
     }
